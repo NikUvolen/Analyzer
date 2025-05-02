@@ -1,0 +1,13 @@
+// в файле `theme.slint`
+export global myColorScheme {
+    // Основные цвета
+    in property <color> primary: #6200ee;
+    in property <color> secondary: #03dac6;
+    in property <color> error: #b00020;
+
+    // Фон и текст (с учётом темы)
+    in property <bool> is-dark: true;
+    in property <color> background: self.is-dark ? #121212 : #ffffff;
+    in property <color> text: self.is-dark ? #e0e0e0 : #1e1e1e;
+    in property <color> logo-color: self.is-dark ? #ffffff : #18112D;
+}

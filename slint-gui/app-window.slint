@@ -1,0 +1,151 @@
+import { Palette, StyleMetrics, HorizontalBox, GroupBox, TextEdit, VerticalBox, Button } from "std-widgets.slint";
+import { myColorScheme } from "theme.slint";
+
+component myText inherits Text {
+    font-family: "Helvetica Neue";
+    font-weight: 400;
+    font-size: 24px; 
+    color: white;
+}
+
+component Logo inherits Path {
+    width: 50px;
+    height: 50px;
+    commands: "M40 0C45.5228 0 50 4.47715 50 10V40C50 45.5228 45.5228 50 40 50H10C4.47715 50 8.05346e-08 45.5228 0 40V10C0 4.47715 4.47715 8.05322e-08 10 0H40ZM13.3799 18.7197V33H23.4805V30.3604H16.5195V18.7197H13.3799ZM29.1357 18.7197L23.7354 33H26.8955L28.0156 29.8203H33.3555L34.4355 33H37.6953L32.3555 18.7197H29.1357ZM30.7354 22.2402L32.5352 27.4805H28.8359L30.6953 22.2402H30.7354Z";
+    stroke: myColorScheme.logo-color;
+    fill: myColorScheme.logo-color;
+    stroke-width: 1px;
+}
+
+component Icon inherits Image {
+    in property <image> image;
+    source: image;
+    colorize: white;
+    
+    width: 24px;
+    height: 24px;
+}
+
+component CodeBlock inherits VerticalBox {
+    in property <string> title;
+    in property <length> yPos;
+    in property <bool> isOutput: true;
+    in property <image> icon;
+    
+    height: 325px;
+    y: yPos;
+    x: 0px;
+    HorizontalBox {
+        alignment: start;
+        height: 35px;
+
+        Icon { image: icon; }
+        myText { 
+            text: title; 
+            vertical-alignment: center;
+        }
+    }
+
+    TextEdit {
+        width: 100%;
+        font-size: 16px;
+        enabled: isOutput;
+    }
+
+    HorizontalBox {
+        alignment: end;
+        padding-left: 12px;
+        padding-right: 12px;
+
+        if (isOutput) :
+            Button {
+                width: 117px;
+                height: 40px;
+                text: "Analyze";
+                primary: true;
+            }
+
+        if (isOutput) :
+            Button {
+                icon: @image-url("icons/file-code-01.svg");
+                colorize-icon: true;
+                width: 50px;
+            }
+    }
+}
+
+
+export component MainWindow inherits Window {
+    width: 800px;
+    height: 870px;
+    icon: @image-url("icons/meme.png");
+    title: @tr("Lexical Analyzer");
+
+    HorizontalLayout {
+        height: 50px;
+        y: 27px;
+        alignment: space-between;
+        padding-left: 20px;
+        padding-right: 20px;
+        myText { 
+            text: "Lexical Analyzer — \nTheory of computation"; 
+            font-weight: 700;
+            font-size: 20px;
+            letter-spacing: -0.5px;
+        }
+        Logo { }
+    }
+
+    CodeBlock {
+        title: "Source code to evaluate";
+        yPos: 126px;
+        icon: @image-url("icons/code-01.svg");
+    }
+
+    CodeBlock {
+        title: "Analysis results";
+        yPos: 450px;
+        icon: @image-url("icons/data.svg");
+        isOutput: false;
+    }
+
+    HorizontalLayout {
+        alignment: end;
+        height: 20px;
+        y: 800px;
+    }
+
+    HorizontalBox {
+        padding-left: 20px;
+        padding-right: 20px;
+        y: parent.height - 70px;
+        alignment: space-between;
+
+        myText {
+            text: "test Error text";
+            font-size: 15px;
+            font-weight: 700;
+            color: #d13f3f;
+            opacity: 1;
+            animate opacity {
+                 duration: 100ms;
+            }
+        }
+
+        HorizontalBox {
+            alignment: end;
+            Text {
+                text: "created for translators  |";
+            }
+            Text {
+                text: "Mikhail Zinkov";
+                font-weight: 700;
+            }
+        }
+    }
+
+    HorizontalBox {
+        width: 100%;
+        height: 50px;
+    }
+}

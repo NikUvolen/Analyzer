@@ -1,0 +1,9 @@
+[project]
+name = "analyzer"
+version = "0.1.0"
+description = "Python GUI implementation that converts RISC-V assembly instructions to machine code"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "slint>=1.11.0a1",
+]
