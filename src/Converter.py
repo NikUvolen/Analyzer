@@ -199,6 +199,13 @@ class RiscvAsm:
             print(f'{result[0]:25} => {result[1]}')
 
     def convert_to_hex_generator(self, code: str) -> (str, list):
+        """
+        Low level converter risc-V code to hex view via generator
+
+        :param code: String risc-V code
+        :return: tumple like a (instruction, hex_value or err)
+        """
+
         self.parts.clear()
         for p in code.split('\n'):
             if p:
@@ -223,6 +230,13 @@ class RiscvAsm:
                 yield part, exc
 
     def convert_to_hex(self, code: str) -> list:
+        """
+            Use the self generator to convert risc-V code to hex view
+
+            :param code: String risc-V code
+            :return: List with parameters like a (instruction, hex_value or err)
+        """
+
         gen = self.convert_to_hex_generator(code) 
         result = []
         

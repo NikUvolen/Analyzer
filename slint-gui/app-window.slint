@@ -1,4 +1,4 @@
-import { Palette, StyleMetrics, HorizontalBox, GroupBox, TextEdit, VerticalBox, Button } from "std-widgets.slint";
+import { Palette, StyleMetrics, StandardTableView, HorizontalBox, GroupBox, TextEdit, VerticalBox, Button } from "std-widgets.slint";
 import { myColorScheme } from "theme.slint";
 
 component myText inherits Text {
@@ -31,7 +31,7 @@ component CodeBlock inherits VerticalBox {
     in property <length> yPos;
     in property <bool> isOutput: true;
     in property <image> icon;
-    
+
     height: 325px;
     y: yPos;
     x: 0px;
@@ -46,11 +46,22 @@ component CodeBlock inherits VerticalBox {
         }
     }
 
-    TextEdit {
+    if (isOutput) :
+    asmCode := TextEdit {
         width: 100%;
         font-size: 16px;
-        enabled: isOutput;
+        text: PercentageAdapter.codeArea;
+        edited(text) => {
+            PercentageAdapter.codeArea = text;
+        }
     }
+    if (!isOutput) :
+        TextEdit {
+            width: 100%;
+            font-size: 16px;
+            read-only: true;
+            text: PercentageAdapter.hexResultArea;
+        }
 
     HorizontalBox {
         alignment: end;
@@ -63,6 +74,9 @@ component CodeBlock inherits VerticalBox {
                 height: 40px;
                 text: "Analyze";
                 primary: true;
+                clicked => {
+                    PercentageAdapter.analyze-asm-code();
+                }
             }
 
         if (isOutput) :
@@ -74,6 +88,16 @@ component CodeBlock inherits VerticalBox {
     }
 }
 
+export global PercentageAdapter {
+    in-out property <string> codeArea;
+    in property <string> hexResultArea;
+
+    in property <[[StandardListViewItem]]> resultRows;
+    
+    callback analyze-asm-code();
+
+    in property <string> error-text;
+}
 
 export component MainWindow inherits Window {
     width: 800px;
@@ -114,6 +138,18 @@ export component MainWindow inherits Window {
         height: 20px;
         y: 800px;
     }
+
+    // StandardTableView {
+    //     width: 230px;
+    //     height: 200px;
+    //     columns: [
+    //         { title: "Instruction" },
+    //         { title: "HEX decode" },
+    //     ];
+    //     rows: [
+            
+    //     ];
+    // }
 
     HorizontalBox {
         padding-left: 20px;
