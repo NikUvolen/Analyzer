@@ -13,7 +13,7 @@ Clone the project or download zip
 Go to the project directory
 
 ```
-  cd my-project
+  cd analyzer
 ```
 
 Auto-start analyzer (only Windows)
