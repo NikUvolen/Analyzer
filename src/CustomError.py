@@ -3,7 +3,7 @@ class InvalidInstructionsError(Exception):
         self.instruction = instruction
     
     def __str__(self):
-        return f'Invalid instruction "{self.instruction}"'
+        return f'ERROR: Invalid instruction'
     
 class InvalidRegister(Exception):
     def __init__(self, register: str, instruction: str, imm: str = None):

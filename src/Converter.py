@@ -21,10 +21,11 @@ class RiscvAsm:
             'U-type': self._u_type,
             'J-type': self._j_type
         }
+        self.original_parts = [] # parts with ',' symbol for output
         self.parts = []
 
     def _get_parts(self, opcode_line: str, type: str, count_parts: int = 4) -> list:
-        parts = opcode_line.split()
+        parts = opcode_line.replace(',','').split()
         if len(parts) != count_parts:
             raise InvalidInstructionsError(opcode_line)
         return parts
@@ -207,13 +208,16 @@ class RiscvAsm:
         """
 
         self.parts.clear()
+        self.original_parts.clear()
         for p in code.split('\n'):
             if p:
-                self.parts.append(p.strip().replace(',', ' '))
+                row = p.strip()
+                self.original_parts.append(row)
+                self.parts.append(row.replace(',', ' '))
         if not self.parts:
             raise InstructionsEmpty
 
-        for part in self.parts:
+        for part in self.original_parts:
             try:
                 instructions = [p.strip() for p in part.split()]
                 found = False

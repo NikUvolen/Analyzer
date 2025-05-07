@@ -1,11 +1,33 @@
 import { Palette, StyleMetrics, StandardTableView, HorizontalBox, GroupBox, TextEdit, VerticalBox, Button } from "std-widgets.slint";
 import { myColorScheme } from "theme.slint";
 
+export global myColorScheme {
+    // Основные цвета
+    in property <color> primary: #6200ee;
+    in property <color> secondary: #03dac6;
+    in property <color> error: #b00020;
+
+    // Фон и текст (с учётом темы)
+    in property <bool> is-dark: true;
+    in property <color> background: self.is-dark ? #1e1e1e : #ffffff;
+    in property <color> text: self.is-dark ? #e0e0e0 : #1e1e1e;
+    in property <color> logo-color: self.is-dark ? #ffffff : #1e1e1e;
+}
+
+export global PercentageAdapter {
+    in-out property <string> codeArea;
+    in property <string> hexResultArea;
+    in property <[[StandardListViewItem]]> resultRows;
+    callback analyze-asm-code();
+
+    in property <string> error-text;
+}
+
+
 component myText inherits Text {
     font-family: "Helvetica Neue";
     font-weight: 400;
     font-size: 24px; 
-    color: white;
 }
 
 component Logo inherits Path {
@@ -20,8 +42,7 @@ component Logo inherits Path {
 component Icon inherits Image {
     in property <image> image;
     source: image;
-    colorize: white;
-    
+    colorize: myColorScheme.logo-color;
     width: 24px;
     height: 24px;
 }
@@ -38,7 +59,6 @@ component CodeBlock inherits VerticalBox {
     HorizontalBox {
         alignment: start;
         height: 35px;
-
         Icon { image: icon; }
         myText { 
             text: title; 
@@ -47,22 +67,23 @@ component CodeBlock inherits VerticalBox {
     }
 
     if (isOutput) :
-    asmCode := TextEdit {
-        width: 100%;
-        font-size: 16px;
-        text: PercentageAdapter.codeArea;
-        edited(text) => {
-            PercentageAdapter.codeArea = text;
-        }
-    }
-    if (!isOutput) :
-        TextEdit {
+        asmCode := TextEdit {
             width: 100%;
             font-size: 16px;
-            read-only: true;
-            text: PercentageAdapter.hexResultArea;
+            text: PercentageAdapter.codeArea;
+            edited(text) => {
+                PercentageAdapter.codeArea = text;
+            }
         }
-
+    if (!isOutput) :
+        StandardTableView {
+            width: 100%;
+            columns: [
+                { title: "Instruction" },
+                { title: "HEX decode" },
+            ];
+            rows: PercentageAdapter.resultRows;
+        }
     HorizontalBox {
         alignment: end;
         padding-left: 12px;
@@ -70,33 +91,16 @@ component CodeBlock inherits VerticalBox {
 
         if (isOutput) :
             Button {
-                width: 117px;
+                width: 70px;
                 height: 40px;
-                text: "Analyze";
+                icon: @image-url("icons/file-code-01.svg");
+                colorize-icon: true;
                 primary: true;
                 clicked => {
                     PercentageAdapter.analyze-asm-code();
                 }
             }
-
-        if (isOutput) :
-            Button {
-                icon: @image-url("icons/file-code-01.svg");
-                colorize-icon: true;
-                width: 50px;
-            }
     }
-}
-
-export global PercentageAdapter {
-    in-out property <string> codeArea;
-    in property <string> hexResultArea;
-
-    in property <[[StandardListViewItem]]> resultRows;
-    
-    callback analyze-asm-code();
-
-    in property <string> error-text;
 }
 
 export component MainWindow inherits Window {
@@ -133,24 +137,6 @@ export component MainWindow inherits Window {
         isOutput: false;
     }
 
-    HorizontalLayout {
-        alignment: end;
-        height: 20px;
-        y: 800px;
-    }
-
-    // StandardTableView {
-    //     width: 230px;
-    //     height: 200px;
-    //     columns: [
-    //         { title: "Instruction" },
-    //         { title: "HEX decode" },
-    //     ];
-    //     rows: [
-            
-    //     ];
-    // }
-
     HorizontalBox {
         padding-left: 20px;
         padding-right: 20px;
@@ -158,14 +144,10 @@ export component MainWindow inherits Window {
         alignment: space-between;
 
         myText {
-            text: "test Error text";
+            text: PercentageAdapter.error-text;
             font-size: 15px;
             font-weight: 700;
-            color: #d13f3f;
-            opacity: 1;
-            animate opacity {
-                 duration: 100ms;
-            }
+            color: #ac4343;
         }
 
         HorizontalBox {
